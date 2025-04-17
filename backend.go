@@ -11,6 +11,7 @@ import (
 
 type Song struct {
 	path string
+	name string
 }
 
 func playSong(path string) {
