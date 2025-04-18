@@ -33,7 +33,7 @@ func main() {
 
 	searched_song_buttons := container.NewVBox()
 	searched_scroll_box := container.NewVScroll(searched_song_buttons)
-	searched_scroll_box.SetMinSize(fyne.NewSize(1, 512))
+	// searched_scroll_box.SetMinSize(fyne.NewSize(1, 512))
 
 	dir, err := os.ReadDir("/home/jude/Music/")
 	if err != nil {
@@ -60,6 +60,23 @@ func main() {
 	selected_song = song_paths[0].path
 
 	search_field := widget.NewEntry()
+	search_field.SetMinRowsVisible(100)
+	searched_scroll_box.SetMinSize(fyne.NewSize(1000, 500))
+	test := container.NewGridWithColumns(2, search_field,
+
+		widget.NewButton("Search", func() {
+			searched_songs = nil
+			searched_song_buttons.RemoveAll()
+			for i := 0; i < len(song_paths); i++ {
+				if strings.Contains(song_paths[i].path, search_field.Text) {
+					searched_songs = append(searched_songs, song_paths[i].path)
+					searched_song_buttons.Add(widget.NewButton(song_paths[i].name, func() {
+						selected_song = song_paths[i].path
+					}))
+				}
+			}
+		}),
+	)
 
 	w.SetContent(
 		container.NewVBox(
@@ -107,26 +124,9 @@ func main() {
 			//songs
 			scroll_box,
 
-			container.NewHBox(
-				container.NewHBox(
-					search_field,
-					widget.NewButton("Search", func() {
-						searched_songs = nil
-						searched_song_buttons.RemoveAll()
-						for i := 0; i < len(song_paths); i++ {
-							if strings.Contains(song_paths[i].path, search_field.Text) {
-								searched_songs = append(searched_songs, song_paths[i].path)
-								searched_song_buttons.Add(widget.NewButton(song_paths[i].name, func() {
-									selected_song = song_paths[i].path
-								}))
-							}
-						}
-					}),
-				),
-				container.NewHBox(
-					searched_scroll_box,
-				),
-			),
+			test,
+
+			searched_scroll_box,
 		),
 	)
 
